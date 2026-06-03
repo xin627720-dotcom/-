@@ -36,7 +36,7 @@ CODEX_DAILY_CREDITS = "20000"
 CODEX_IN_PER_1K = "1.25"
 CODEX_OUT_PER_1K = "10"
 # 管理员邮箱白名单（逗号分隔）。用这些邮箱注册/登录即可访问 /api/admin 与前端「管理后台」。
-ADMIN_EMAILS = ""
+ADMIN_EMAILS = "xin627720@gmail.com"
 
 # 生图各 provider 的密钥用 wrangler secret 注入，例如：
 #   wrangler secret put OPENAI_API_KEY
