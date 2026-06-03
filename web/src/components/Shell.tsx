@@ -43,8 +43,25 @@ export default function Shell({
           </nav>
         </div>
         <div className="flex items-center gap-3 text-sm">
-          <span className="px-3 py-1 rounded-full bg-neutral-900 border border-neutral-800">
-            积分 <span className="text-indigo-400 font-semibold">{me.credits}</span>
+          <span
+            className={`px-3 py-1 rounded-full border ${
+              view === "image"
+                ? "bg-indigo-600/20 border-indigo-500/50"
+                : "bg-neutral-900 border-neutral-800"
+            }`}
+            title="图像生成积分（每日重置）"
+          >
+            图 <span className="text-indigo-400 font-semibold">{me.credits}</span>
+          </span>
+          <span
+            className={`px-3 py-1 rounded-full border ${
+              view === "codex"
+                ? "bg-emerald-600/20 border-emerald-500/50"
+                : "bg-neutral-900 border-neutral-800"
+            }`}
+            title="Codex 编程积分（每日重置，按输入输出计费）"
+          >
+            码 <span className="text-emerald-400 font-semibold">{me.codexCredits}</span>
           </span>
           <span className="text-neutral-500 hidden sm:inline">{me.email}</span>
           <button onClick={onLogout} className="text-neutral-400 hover:text-neutral-200 transition">

@@ -28,6 +28,8 @@ export async function createUser(env: Env, email: string, passwordHash: string):
     password_hash: passwordHash,
     daily_credits: 0,
     credits_reset_date: "",
+    codex_credits: 0,
+    codex_reset_date: "",
     created_at: now,
   };
 }

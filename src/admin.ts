@@ -8,11 +8,12 @@ type Ctx = Context<{ Bindings: Env; Variables: Variables }>;
 
 export async function adminStats(c: Ctx): Promise<Response> {
   const db = c.env.DB;
-  const [users, gens, msgs, credits] = await Promise.all([
+  const [users, gens, msgs, credits, codexCredits] = await Promise.all([
     db.prepare("SELECT COUNT(*) AS n FROM users").first<{ n: number }>(),
     db.prepare("SELECT COUNT(*) AS n FROM generations").first<{ n: number }>(),
     db.prepare("SELECT COUNT(*) AS n FROM chat_messages").first<{ n: number }>(),
     db.prepare("SELECT COALESCE(SUM(daily_credits),0) AS n FROM users").first<{ n: number }>(),
+    db.prepare("SELECT COALESCE(SUM(codex_credits),0) AS n FROM users").first<{ n: number }>(),
   ]);
   const succ = await db
     .prepare("SELECT COUNT(*) AS n FROM generations WHERE status = 'success'")
@@ -23,12 +24,13 @@ export async function adminStats(c: Ctx): Promise<Response> {
     successfulGenerations: succ?.n ?? 0,
     chatMessages: msgs?.n ?? 0,
     totalCredits: credits?.n ?? 0,
+    totalCodexCredits: codexCredits?.n ?? 0,
   });
 }
 
 export async function adminUsers(c: Ctx): Promise<Response> {
   const res = await c.env.DB.prepare(
-    `SELECT u.id, u.email, u.daily_credits, u.created_at,
+    `SELECT u.id, u.email, u.daily_credits, u.codex_credits, u.created_at,
             (SELECT COUNT(*) FROM generations g WHERE g.user_id = u.id) AS gen_count,
             (SELECT COUNT(*) FROM chat_messages m WHERE m.user_id = u.id) AS msg_count
        FROM users u
@@ -38,6 +40,7 @@ export async function adminUsers(c: Ctx): Promise<Response> {
     id: string;
     email: string;
     daily_credits: number;
+    codex_credits: number;
     created_at: number;
     gen_count: number;
     msg_count: number;
@@ -47,6 +50,7 @@ export async function adminUsers(c: Ctx): Promise<Response> {
       id: u.id,
       email: u.email,
       credits: u.daily_credits,
+      codexCredits: u.codex_credits,
       createdAt: u.created_at,
       genCount: u.gen_count,
       msgCount: u.msg_count,
@@ -58,13 +62,17 @@ export async function adminUserDetail(c: Ctx): Promise<Response> {
   const id = c.req.param("id");
   const db = c.env.DB;
   const user = await db
-    .prepare("SELECT id, email, daily_credits, credits_reset_date, created_at FROM users WHERE id = ?")
+    .prepare(
+      "SELECT id, email, daily_credits, credits_reset_date, codex_credits, codex_reset_date, created_at FROM users WHERE id = ?",
+    )
     .bind(id)
     .first<{
       id: string;
       email: string;
       daily_credits: number;
       credits_reset_date: string;
+      codex_credits: number;
+      codex_reset_date: string;
       created_at: number;
     }>();
   if (!user) return c.json({ error: "用户不存在" }, 404);
@@ -96,10 +104,17 @@ export async function adminUserDetail(c: Ctx): Promise<Response> {
 
   const tx = await db
     .prepare(
-      "SELECT id, delta, reason, balance_after, created_at FROM credit_transactions WHERE user_id = ? ORDER BY created_at DESC LIMIT 50",
+      "SELECT id, delta, reason, balance_after, pool, created_at FROM credit_transactions WHERE user_id = ? ORDER BY created_at DESC LIMIT 50",
     )
     .bind(id)
-    .all<{ id: string; delta: number; reason: string; balance_after: number; created_at: number }>();
+    .all<{
+      id: string;
+      delta: number;
+      reason: string;
+      balance_after: number;
+      pool: string;
+      created_at: number;
+    }>();
 
   return c.json({
     user: {
@@ -107,6 +122,8 @@ export async function adminUserDetail(c: Ctx): Promise<Response> {
       email: user.email,
       credits: user.daily_credits,
       creditsResetDate: user.credits_reset_date,
+      codexCredits: user.codex_credits,
+      codexResetDate: user.codex_reset_date,
       createdAt: user.created_at,
     },
     generations: (gens.results ?? []).map((g) => ({
@@ -132,6 +149,7 @@ export async function adminUserDetail(c: Ctx): Promise<Response> {
       delta: t.delta,
       reason: t.reason,
       balanceAfter: t.balance_after,
+      pool: t.pool,
       createdAt: t.created_at,
     })),
   });
@@ -139,28 +157,35 @@ export async function adminUserDetail(c: Ctx): Promise<Response> {
 
 export async function adminAdjustCredits(c: Ctx): Promise<Response> {
   const id = c.req.param("id");
-  const body = (await c.req.json().catch(() => null)) as { delta?: unknown } | null;
+  const body = (await c.req.json().catch(() => null)) as {
+    delta?: unknown;
+    pool?: unknown;
+  } | null;
   const delta = Math.trunc(Number(body?.delta));
   if (!Number.isFinite(delta) || delta === 0) {
     return c.json({ error: "delta 必须为非零整数" }, 400);
   }
+  // 指定调整哪个积分池：image（图像生成）| codex
+  const pool = body?.pool === "codex" ? "codex" : "image";
+  const column = pool === "codex" ? "codex_credits" : "daily_credits";
+
   const db = c.env.DB;
   const user = await db
-    .prepare("SELECT daily_credits FROM users WHERE id = ?")
+    .prepare(`SELECT ${column} AS bal FROM users WHERE id = ?`)
     .bind(id)
-    .first<{ daily_credits: number }>();
+    .first<{ bal: number }>();
   if (!user) return c.json({ error: "用户不存在" }, 404);
 
-  const balanceAfter = Math.max(0, user.daily_credits + delta);
-  const applied = balanceAfter - user.daily_credits; // 实际变动（扣减时不会扣成负数）
+  const balanceAfter = Math.max(0, user.bal + delta);
+  const applied = balanceAfter - user.bal; // 实际变动（扣减时不会扣成负数）
   const now = Date.now();
   await db.batch([
-    db.prepare("UPDATE users SET daily_credits = ? WHERE id = ?").bind(balanceAfter, id),
+    db.prepare(`UPDATE users SET ${column} = ? WHERE id = ?`).bind(balanceAfter, id),
     db
       .prepare(
-        "INSERT INTO credit_transactions (id, user_id, generation_id, delta, reason, balance_after, created_at) VALUES (?, ?, '', ?, 'admin_adjust', ?, ?)",
+        "INSERT INTO credit_transactions (id, user_id, generation_id, delta, reason, balance_after, created_at, pool) VALUES (?, ?, '', ?, 'admin_adjust', ?, ?, ?)",
       )
-      .bind(newId("tx"), id, applied, balanceAfter, now),
+      .bind(newId("tx"), id, applied, balanceAfter, now, pool),
   ]);
-  return c.json({ credits: balanceAfter, applied });
+  return c.json({ credits: balanceAfter, applied, pool });
 }

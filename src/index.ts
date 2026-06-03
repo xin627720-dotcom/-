@@ -19,7 +19,7 @@ import {
   listEnabledModels,
   listGenerations,
 } from "./db";
-import { ensureDailyCredits, computeCost } from "./credits";
+import { ensureDailyCredits, ensureCodexCredits, computeCost } from "./credits";
 import { handleGenerate } from "./generate";
 import { handleCodexChat } from "./codex";
 import { adminStats, adminUsers, adminUserDetail, adminAdjustCredits } from "./admin";
@@ -36,10 +36,14 @@ app.post("/api/auth/register", async (c) => {
   if (await getUserByEmail(c.env, email)) return c.json({ error: "该邮箱已注册" }, 409);
 
   const user = await createUser(c.env, email, await hashPassword(password));
-  const refreshed = await ensureDailyCredits(c.env, user);
+  const refreshed = await ensureCodexCredits(c.env, await ensureDailyCredits(c.env, user));
   const token = await createSession(c.env, user.id);
   setSessionCookie(c, token, c.env);
-  return c.json({ email: refreshed.email, credits: refreshed.daily_credits });
+  return c.json({
+    email: refreshed.email,
+    credits: refreshed.daily_credits,
+    codexCredits: refreshed.codex_credits,
+  });
 });
 
 app.post("/api/auth/login", async (c) => {
@@ -48,10 +52,14 @@ app.post("/api/auth/login", async (c) => {
   if (!user || !(await verifyPassword(password ?? "", user.password_hash))) {
     return c.json({ error: "邮箱或密码错误" }, 401);
   }
-  const refreshed = await ensureDailyCredits(c.env, user);
+  const refreshed = await ensureCodexCredits(c.env, await ensureDailyCredits(c.env, user));
   const token = await createSession(c.env, user.id);
   setSessionCookie(c, token, c.env);
-  return c.json({ email: refreshed.email, credits: refreshed.daily_credits });
+  return c.json({
+    email: refreshed.email,
+    credits: refreshed.daily_credits,
+    codexCredits: refreshed.codex_credits,
+  });
 });
 
 app.post("/api/auth/logout", async (c) => {
@@ -62,11 +70,12 @@ app.post("/api/auth/logout", async (c) => {
 app.get("/api/me", async (c) => {
   const user = await resolveUser(c);
   if (!user) return c.json({ user: null });
-  const refreshed = await ensureDailyCredits(c.env, user);
+  const refreshed = await ensureCodexCredits(c.env, await ensureDailyCredits(c.env, user));
   return c.json({
     user: {
       email: refreshed.email,
       credits: refreshed.daily_credits,
+      codexCredits: refreshed.codex_credits,
       isAdmin: isAdmin(c.env, refreshed.email),
     },
   });

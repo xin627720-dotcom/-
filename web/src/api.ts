@@ -14,6 +14,7 @@ async function req<T>(path: string, init?: RequestInit): Promise<T> {
 export interface Me {
   email: string;
   credits: number;
+  codexCredits: number;
   isAdmin?: boolean;
 }
 
@@ -23,20 +24,37 @@ export interface AdminStats {
   successfulGenerations: number;
   chatMessages: number;
   totalCredits: number;
+  totalCodexCredits: number;
 }
 export interface AdminUser {
   id: string;
   email: string;
   credits: number;
+  codexCredits: number;
   createdAt: number;
   genCount: number;
   msgCount: number;
 }
 export interface AdminUserDetail {
-  user: { id: string; email: string; credits: number; creditsResetDate: string; createdAt: number };
+  user: {
+    id: string;
+    email: string;
+    credits: number;
+    creditsResetDate: string;
+    codexCredits: number;
+    codexResetDate: string;
+    createdAt: number;
+  };
   generations: HistoryItem[];
   messages: { id: string; role: string; content: string; createdAt: number }[];
-  transactions: { id: string; delta: number; reason: string; balanceAfter: number; createdAt: number }[];
+  transactions: {
+    id: string;
+    delta: number;
+    reason: string;
+    balanceAfter: number;
+    pool: string;
+    createdAt: number;
+  }[];
 }
 export interface Model {
   id: string;
@@ -80,9 +98,9 @@ export const api = {
   adminStats: () => req<AdminStats>("/api/admin/stats"),
   adminUsers: () => req<{ users: AdminUser[] }>("/api/admin/users"),
   adminUserDetail: (id: string) => req<AdminUserDetail>(`/api/admin/users/${id}`),
-  adminAdjustCredits: (id: string, delta: number) =>
-    req<{ credits: number; applied: number }>(`/api/admin/users/${id}/credits`, {
+  adminAdjustCredits: (id: string, delta: number, pool: "image" | "codex" = "image") =>
+    req<{ credits: number; applied: number; pool: string }>(`/api/admin/users/${id}/credits`, {
       method: "POST",
-      body: JSON.stringify({ delta }),
+      body: JSON.stringify({ delta, pool }),
     }),
 };

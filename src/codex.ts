@@ -4,6 +4,7 @@
 import type { Context } from "hono";
 import type { Env, Variables } from "./types";
 import { insertChatMessage } from "./db";
+import { ensureCodexCredits, computeCodexCost, chargeCodex, estimateTokens } from "./credits";
 
 interface ChatMessage {
   role: "system" | "user" | "assistant";
@@ -38,7 +39,13 @@ export async function handleCodexChat(
 
   if (messages.length === 0) return c.json({ error: "消息不能为空" }, 400);
 
-  const user = c.get("user");
+  let user = c.get("user");
+  // Codex 独立积分池：惰性发放每日积分，余额 <= 0 拒绝
+  user = await ensureCodexCredits(env, user);
+  if (user.codex_credits <= 0) {
+    return c.json({ error: "Codex 积分不足，请明日再来或联系管理员充值" }, 402);
+  }
+
   const lastUser = [...messages].reverse().find((m) => m.role === "user");
   if (lastUser) {
     // 持久化用户消息（供管理后台查看），失败不阻塞对话
@@ -46,6 +53,8 @@ export async function handleCodexChat(
       insertChatMessage(env, user.id, "user", lastUser.content).catch(() => {}),
     );
   }
+  // 输入字符（无 usage 时按字符估算 token）
+  const inputChars = messages.reduce((s, m) => s + m.content.length, 0);
 
   const base = (typeof env.CODEX_BASE_URL === "string" && env.CODEX_BASE_URL
     ? env.CODEX_BASE_URL
@@ -59,6 +68,7 @@ export async function handleCodexChat(
     body: JSON.stringify({
       model,
       stream: true,
+      stream_options: { include_usage: true },
       messages: [{ role: "system", content: SYSTEM_PROMPT }, ...messages],
     }),
   });
@@ -75,10 +85,12 @@ export async function handleCodexChat(
     return c.json({ error: msg }, 502);
   }
 
-  // SSE 透传，同时旁路累积助手回复以便落库（供管理后台查看）
+  // SSE 透传，同时旁路累积助手回复（落库）并捕获 usage（计费）
   const decoder = new TextDecoder();
   let acc = "";
   let sseBuf = "";
+  let promptTokens = 0;
+  let completionTokens = 0;
   let resolveDone!: () => void;
   const done = new Promise<void>((r) => (resolveDone = r));
 
@@ -94,9 +106,16 @@ export async function handleCodexChat(
         const payload = t.slice(5).trim();
         if (!payload || payload === "[DONE]") continue;
         try {
-          const j = JSON.parse(payload) as { choices?: Array<{ delta?: { content?: string } }> };
+          const j = JSON.parse(payload) as {
+            choices?: Array<{ delta?: { content?: string } }>;
+            usage?: { prompt_tokens?: number; completion_tokens?: number };
+          };
           const d = j.choices?.[0]?.delta?.content;
           if (d) acc += d;
+          if (j.usage) {
+            promptTokens = j.usage.prompt_tokens ?? promptTokens;
+            completionTokens = j.usage.completion_tokens ?? completionTokens;
+          }
         } catch {
           // 忽略非 JSON 行
         }
@@ -107,8 +126,18 @@ export async function handleCodexChat(
     },
   });
 
+  const userId = user.id;
   c.executionCtx.waitUntil(
-    done.then(() => (acc ? insertChatMessage(env, user.id, "assistant", acc) : undefined)).catch(() => {}),
+    done
+      .then(async () => {
+        if (acc) await insertChatMessage(env, userId, "assistant", acc);
+        // 无 usage 时按字符估算（约 4 字符/token）
+        const inTok = promptTokens > 0 ? promptTokens : Math.max(1, Math.ceil(inputChars / 4));
+        const outTok = completionTokens > 0 ? completionTokens : estimateTokens(acc);
+        const cost = computeCodexCost(env, inTok, outTok);
+        await chargeCodex(env, userId, cost);
+      })
+      .catch(() => {}),
   );
 
   return new Response(upstream.body.pipeThrough(tee), {

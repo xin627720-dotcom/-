@@ -29,7 +29,7 @@ function renderContent(text: string) {
   });
 }
 
-export default function CodexChat() {
+export default function CodexChat({ onUsed }: { onUsed?: () => void }) {
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [streaming, setStreaming] = useState(false);
@@ -116,6 +116,8 @@ export default function CodexChat() {
       });
     } finally {
       setStreaming(false);
+      // 对话结束后端已按用量扣 Codex 积分，刷新顶部余额
+      onUsed?.();
     }
   }
 

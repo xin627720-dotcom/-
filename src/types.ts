@@ -5,6 +5,9 @@ export interface Env {
   BUCKET: R2Bucket;
   ASSETS: Fetcher;
   DAILY_CREDITS: string;
+  CODEX_DAILY_CREDITS: string;
+  CODEX_IN_PER_1K: string;
+  CODEX_OUT_PER_1K: string;
   SESSION_TTL_DAYS: string;
   // 各 provider 密钥经 wrangler secret 注入，名称由 models.api_key_ref 指定。
   // 通过 (env as Record<string, string>)[api_key_ref] 动态取用。
@@ -17,6 +20,8 @@ export interface UserRow {
   password_hash: string;
   daily_credits: number;
   credits_reset_date: string;
+  codex_credits: number;
+  codex_reset_date: string;
   created_at: number;
 }
 

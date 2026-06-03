@@ -22,13 +22,17 @@ binding = "BUCKET"
 bucket_name = "corezen-images"
 
 [vars]
-# 每日免费积分额度
+# 每日免费积分额度（图像生成池）
 DAILY_CREDITS = "100"
 # 会话有效期（天）
 SESSION_TTL_DAYS = "30"
 # Codex 编程助手：中转端点与模型（密钥用 SHAREDCHAT_API_KEY secret 注入）
 CODEX_BASE_URL = "https://new.sharedchat.cc/codex"
 CODEX_MODEL = "gpt-5-codex"
+# Codex 独立积分池：每日额度 + 计费费率（每 1k token 消耗的积分，输入/输出分别计）
+CODEX_DAILY_CREDITS = "100"
+CODEX_IN_PER_1K = "1"
+CODEX_OUT_PER_1K = "3"
 # 管理员邮箱白名单（逗号分隔）。用这些邮箱注册/登录即可访问 /api/admin 与前端「管理后台」。
 ADMIN_EMAILS = ""
 

@@ -12,6 +12,7 @@ export default function Admin() {
   const [detail, setDetail] = useState<AdminUserDetail | null>(null);
   const [error, setError] = useState("");
   const [delta, setDelta] = useState("");
+  const [pool, setPool] = useState<"image" | "codex">("image");
   const [busy, setBusy] = useState(false);
 
   function reload() {
@@ -35,7 +36,7 @@ export default function Admin() {
     setBusy(true);
     setError("");
     try {
-      await api.adminAdjustCredits(selected, d);
+      await api.adminAdjustCredits(selected, d, pool);
       setDelta("");
       const fresh = await api.adminUserDetail(selected);
       setDetail(fresh);
@@ -52,7 +53,8 @@ export default function Admin() {
     { label: "生成总数", value: stats?.generations },
     { label: "成功生成", value: stats?.successfulGenerations },
     { label: "对话消息", value: stats?.chatMessages },
-    { label: "在用积分", value: stats?.totalCredits },
+    { label: "图像积分", value: stats?.totalCredits },
+    { label: "Codex积分", value: stats?.totalCodexCredits },
   ];
 
   return (
@@ -60,7 +62,7 @@ export default function Admin() {
       <h1 className="text-lg font-semibold">管理后台</h1>
       {error && <div className="text-sm text-rose-400 bg-rose-950/40 rounded-lg px-3 py-2">{error}</div>}
 
-      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         {statCards.map((s) => (
           <div key={s.label} className="bg-neutral-900 border border-neutral-800 rounded-xl p-4">
             <div className="text-xs text-neutral-500">{s.label}</div>
@@ -82,9 +84,12 @@ export default function Admin() {
                   selected === u.id ? "bg-indigo-600/20" : "hover:bg-neutral-900"
                 }`}
               >
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between gap-2">
                   <span className="text-sm truncate">{u.email}</span>
-                  <span className="text-xs text-indigo-400 font-semibold shrink-0 ml-2">{u.credits} 分</span>
+                  <span className="text-xs shrink-0 ml-2 space-x-1.5">
+                    <span className="text-indigo-400 font-semibold" title="图像积分">图{u.credits}</span>
+                    <span className="text-emerald-400 font-semibold" title="Codex积分">码{u.codexCredits}</span>
+                  </span>
                 </div>
                 <div className="text-[11px] text-neutral-500 mt-0.5">
                   图 {u.genCount} · 对话 {u.msgCount} · {fmt(u.createdAt)}
@@ -107,10 +112,19 @@ export default function Admin() {
               <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-4">
                 <div className="text-sm">{detail.user.email}</div>
                 <div className="text-xs text-neutral-500 mt-1">
-                  当前积分 <span className="text-indigo-400 font-semibold">{detail.user.credits}</span> · 注册于{" "}
+                  图像积分 <span className="text-indigo-400 font-semibold">{detail.user.credits}</span> · Codex积分{" "}
+                  <span className="text-emerald-400 font-semibold">{detail.user.codexCredits}</span> · 注册于{" "}
                   {fmt(detail.user.createdAt)}
                 </div>
                 <div className="flex gap-2 mt-3">
+                  <select
+                    value={pool}
+                    onChange={(e) => setPool(e.target.value as "image" | "codex")}
+                    className="px-2 py-2 bg-neutral-950 border border-neutral-800 rounded-lg text-sm outline-none focus:border-indigo-500"
+                  >
+                    <option value="image">图像池</option>
+                    <option value="codex">Codex池</option>
+                  </select>
                   <input
                     type="number"
                     value={delta}
@@ -185,6 +199,15 @@ export default function Admin() {
                     {detail.transactions.map((t) => (
                       <div key={t.id} className="flex justify-between text-neutral-400">
                         <span>
+                          <span
+                            className={`mr-1.5 px-1 rounded ${
+                              t.pool === "codex"
+                                ? "bg-emerald-600/20 text-emerald-400"
+                                : "bg-indigo-600/20 text-indigo-400"
+                            }`}
+                          >
+                            {t.pool === "codex" ? "码" : "图"}
+                          </span>
                           {t.reason} · 余额 {t.balanceAfter}
                         </span>
                         <span className={t.delta >= 0 ? "text-emerald-400" : "text-rose-400"}>

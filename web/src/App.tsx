@@ -24,6 +24,13 @@ export default function App() {
     setMe(null);
   }
 
+  // 重新拉取余额（Codex 对话后端按用量后付费，结束后刷新）
+  const refreshMe = () =>
+    api
+      .me()
+      .then((r) => r.user && setMe(r.user))
+      .catch(() => {});
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center text-neutral-600 text-sm">加载中…</div>
@@ -35,7 +42,7 @@ export default function App() {
   return (
     <Shell me={me} view={view} onView={setView} onLogout={logout}>
       {view === "image" && <Studio onCredits={(c) => setMe({ ...me, credits: c })} />}
-      {view === "codex" && <CodexChat />}
+      {view === "codex" && <CodexChat onUsed={refreshMe} />}
       {view === "admin" && me.isAdmin && <Admin />}
     </Shell>
   );

@@ -86,6 +86,67 @@ export async function deductCredits(
   return { ok: true, balanceAfter };
 }
 
+// ============ Codex 独立积分池 ============
+
+function num(v: unknown, def: number): number {
+  const n = parseInt(String(v ?? ""), 10);
+  return Number.isFinite(n) ? n : def;
+}
+
+// Codex 每日积分惰性发放（与图像积分独立，独立日期）
+export async function ensureCodexCredits(env: Env, user: UserRow): Promise<UserRow> {
+  const today = beijingDate();
+  if (user.codex_reset_date === today) return user;
+  const daily = num(env.CODEX_DAILY_CREDITS, 100);
+  const now = Date.now();
+  await env.DB.batch([
+    env.DB.prepare("UPDATE users SET codex_credits = ?, codex_reset_date = ? WHERE id = ?").bind(
+      daily,
+      today,
+      user.id,
+    ),
+    env.DB.prepare(
+      "INSERT INTO credit_transactions (id, user_id, generation_id, delta, reason, balance_after, created_at, pool) VALUES (?, ?, '', ?, 'codex_daily_grant', ?, ?, 'codex')",
+    ).bind(newId("tx"), user.id, daily, daily, now),
+  ]);
+  return { ...user, codex_credits: daily, codex_reset_date: today };
+}
+
+// 估算 token（无 usage 时回退）：约 4 字符/token
+export function estimateTokens(text: string): number {
+  return Math.max(1, Math.ceil(text.length / 4));
+}
+
+// 按输入/输出 token 计费：cost = ceil((in×inRate + out×outRate) / 1000)，下限 1
+export function computeCodexCost(env: Env, promptTokens: number, completionTokens: number): number {
+  const inRate = num(env.CODEX_IN_PER_1K, 1);
+  const outRate = num(env.CODEX_OUT_PER_1K, 3);
+  return Math.max(1, Math.ceil((promptTokens * inRate + completionTokens * outRate) / 1000));
+}
+
+// Codex 对话结束后扣费（后付费，余额不足时扣到 0 为止）
+export async function chargeCodex(
+  env: Env,
+  userId: string,
+  amount: number,
+): Promise<number> {
+  if (amount <= 0) return 0;
+  const cur = await env.DB.prepare("SELECT codex_credits FROM users WHERE id = ?")
+    .bind(userId)
+    .first<{ codex_credits: number }>();
+  const before = cur?.codex_credits ?? 0;
+  const balanceAfter = Math.max(0, before - amount);
+  const applied = before - balanceAfter;
+  const now = Date.now();
+  await env.DB.batch([
+    env.DB.prepare("UPDATE users SET codex_credits = ? WHERE id = ?").bind(balanceAfter, userId),
+    env.DB.prepare(
+      "INSERT INTO credit_transactions (id, user_id, generation_id, delta, reason, balance_after, created_at, pool) VALUES (?, ?, '', ?, 'codex_chat', ?, ?, 'codex')",
+    ).bind(newId("tx"), userId, -applied, balanceAfter, now),
+  ]);
+  return balanceAfter;
+}
+
 // 生成失败全额退款
 export async function refundCredits(
   env: Env,
