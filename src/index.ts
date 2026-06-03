@@ -20,6 +20,7 @@ import {
   listGenerations,
 } from "./db";
 import { ensureDailyCredits, ensureCodexCredits, computeCost } from "./credits";
+import { storageEnabled, storageGet } from "./storage";
 import { handleGenerate } from "./generate";
 import { handleCodexChat } from "./codex";
 import { adminStats, adminUsers, adminUserDetail, adminAdjustCredits } from "./admin";
@@ -145,18 +146,17 @@ app.get("/api/admin/users", requireAdmin, adminUsers);
 app.get("/api/admin/users/:id", requireAdmin, adminUserDetail);
 app.post("/api/admin/users/:id/credits", requireAdmin, adminAdjustCredits);
 
-// ---------- 图片回源（R2）----------
+// ---------- 图片回源（Supabase Storage）----------
 app.get("/img/*", async (c) => {
   const key = c.req.path.replace(/^\/img\//, "");
   if (!key) return c.notFound();
-  if (!c.env.BUCKET) return c.notFound();
-  const obj = await c.env.BUCKET.get(key);
-  if (!obj) return c.notFound();
+  if (!storageEnabled(c.env)) return c.notFound();
+  const upstream = await storageGet(c.env, key);
+  if (!upstream || !upstream.body) return c.notFound();
   const headers = new Headers();
-  obj.writeHttpMetadata(headers);
+  headers.set("content-type", upstream.headers.get("content-type") || "image/png");
   headers.set("cache-control", "public, max-age=31536000, immutable");
-  headers.set("etag", obj.httpEtag);
-  return new Response(obj.body, { headers });
+  return new Response(upstream.body, { headers });
 });
 
 // 其余路径交给静态资源（SPA）。assets 绑定在 wrangler.toml 已设 run_worker_first，

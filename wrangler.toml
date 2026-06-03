@@ -23,14 +23,13 @@ binding = "DB"
 database_name = "corezen_db"
 database_id = "39c77c6a-7e4c-406a-82d5-a49977bc16bd"
 
-# Cloudflare R2 图片存储（图像生成用）。
-# 账号开通 R2 后取消下面注释并 `wrangler r2 bucket create corezen-images` 再部署即可启用。
-# 未绑定时图像生成返回 503，不影响 Codex / 登录 / 积分 / 管理后台。
-# [[r2_buckets]]
-# binding = "BUCKET"
-# bucket_name = "corezen-images"
+# 图片对象存储：Supabase Storage（替代 R2，免费、无需绑卡）。
+# 私有桶 "images"；服务端用 SUPABASE_SERVICE_KEY（secret）上传/回源。
+# 缺少 service key 时图像生成返回 503，不影响 Codex / 登录 / 积分 / 管理后台。
 
 [vars]
+# 图片存储（Supabase Storage）项目地址；service key 用 secret 注入
+SUPABASE_URL = "https://skvtpphpvwazhpgqytqb.supabase.co"
 # 每日免费积分额度（图像生成池）
 DAILY_CREDITS = "100"
 # 会话有效期（天）

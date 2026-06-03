@@ -2,8 +2,10 @@
 
 export interface Env {
   DB: D1Database;
-  BUCKET?: R2Bucket;
   ASSETS: Fetcher;
+  // 图片对象存储（Supabase Storage）
+  SUPABASE_URL?: string;
+  SUPABASE_SERVICE_KEY?: string;
   DAILY_CREDITS: string;
   CODEX_DAILY_CREDITS: string;
   CODEX_IN_PER_1K: string;

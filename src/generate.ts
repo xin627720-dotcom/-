@@ -5,6 +5,7 @@ import type { Env, Variables } from "./types";
 import { getModelById, insertGeneration, updateGeneration, newId } from "./db";
 import { computeCost, deductCredits, refundCredits } from "./credits";
 import { getProvider } from "./providers";
+import { storageEnabled, storagePut } from "./storage";
 
 const ALLOWED_SIZES = ["256x256", "512x512", "1024x1024", "1024x1792", "1792x1024"];
 const MAX_N = 4;
@@ -57,13 +58,13 @@ export async function handleGenerate(
     created_at: now,
   });
 
-  // 图像存储（R2）未绑定时，直接返回友好提示，不扣积分
-  if (!env.BUCKET) {
+  // 图片存储未配置时直接返回友好提示，不扣积分
+  if (!storageEnabled(env)) {
     await updateGeneration(env, genId, {
       status: "failed",
-      error: "图像存储未启用（R2 未开通）",
+      error: "图片存储未配置（缺少 SUPABASE_SERVICE_KEY）",
     });
-    return c.json({ error: "图像生成暂未启用：服务器尚未配置图片存储（R2）" }, 503);
+    return c.json({ error: "图像生成暂未启用：服务器尚未配置图片存储" }, 503);
   }
 
   // 预扣积分
@@ -77,13 +78,11 @@ export async function handleGenerate(
     const provider = getProvider(model.provider_type);
     const { images } = await provider.generate({ prompt, size, quality, n, model, env });
 
-    // 写入 R2
+    // 写入 Supabase Storage
     const keys: string[] = [];
     for (let i = 0; i < images.length; i++) {
       const key = `${user.id}/${genId}_${i}.png`;
-      await env.BUCKET.put(key, images[i], {
-        httpMetadata: { contentType: "image/png" },
-      });
+      await storagePut(env, key, images[i], "image/png");
       keys.push(key);
     }
 
