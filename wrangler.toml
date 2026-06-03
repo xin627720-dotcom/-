@@ -14,7 +14,7 @@ run_worker_first = ["/api/*", "/img/*"]
 [[d1_databases]]
 binding = "DB"
 database_name = "corezen_db"
-database_id = "REPLACE_WITH_D1_DATABASE_ID"
+database_id = "39c77c6a-7e4c-406a-82d5-a49977bc16bd"
 
 # Cloudflare R2 图片存储
 [[r2_buckets]]
