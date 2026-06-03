@@ -3,6 +3,13 @@ main = "src/index.ts"
 compatibility_date = "2025-01-01"
 compatibility_flags = ["nodejs_compat"]
 
+# 自定义域：把 corezen.top 指向本 Worker（需 zone 在同一账号 + DNS:Edit 权限）
+routes = [
+  { pattern = "corezen.top", custom_domain = true }
+]
+# 保留 *.workers.dev 备用地址（自定义域证书签发期间方便访问）
+workers_dev = true
+
 # 前端构建产物作为静态资源托管；未命中静态文件时回落到 Worker (SPA + /api)
 [assets]
 directory = "./web/dist"
@@ -16,10 +23,12 @@ binding = "DB"
 database_name = "corezen_db"
 database_id = "39c77c6a-7e4c-406a-82d5-a49977bc16bd"
 
-# Cloudflare R2 图片存储
-[[r2_buckets]]
-binding = "BUCKET"
-bucket_name = "corezen-images"
+# Cloudflare R2 图片存储（图像生成用）。
+# 账号开通 R2 后取消下面注释并 `wrangler r2 bucket create corezen-images` 再部署即可启用。
+# 未绑定时图像生成返回 503，不影响 Codex / 登录 / 积分 / 管理后台。
+# [[r2_buckets]]
+# binding = "BUCKET"
+# bucket_name = "corezen-images"
 
 [vars]
 # 每日免费积分额度（图像生成池）

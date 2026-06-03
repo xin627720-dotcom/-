@@ -2,7 +2,7 @@
 
 export interface Env {
   DB: D1Database;
-  BUCKET: R2Bucket;
+  BUCKET?: R2Bucket;
   ASSETS: Fetcher;
   DAILY_CREDITS: string;
   CODEX_DAILY_CREDITS: string;

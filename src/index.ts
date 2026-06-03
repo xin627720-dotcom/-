@@ -149,6 +149,7 @@ app.post("/api/admin/users/:id/credits", requireAdmin, adminAdjustCredits);
 app.get("/img/*", async (c) => {
   const key = c.req.path.replace(/^\/img\//, "");
   if (!key) return c.notFound();
+  if (!c.env.BUCKET) return c.notFound();
   const obj = await c.env.BUCKET.get(key);
   if (!obj) return c.notFound();
   const headers = new Headers();

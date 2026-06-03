@@ -57,6 +57,15 @@ export async function handleGenerate(
     created_at: now,
   });
 
+  // 图像存储（R2）未绑定时，直接返回友好提示，不扣积分
+  if (!env.BUCKET) {
+    await updateGeneration(env, genId, {
+      status: "failed",
+      error: "图像存储未启用（R2 未开通）",
+    });
+    return c.json({ error: "图像生成暂未启用：服务器尚未配置图片存储（R2）" }, 503);
+  }
+
   // 预扣积分
   const deduct = await deductCredits(env, user, cost, genId);
   if (!deduct.ok) {
