@@ -1,0 +1,37 @@
+name = "corezen-image-studio"
+main = "src/index.ts"
+compatibility_date = "2025-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+# 前端构建产物作为静态资源托管；未命中静态文件时回落到 Worker (SPA + /api)
+[assets]
+directory = "./web/dist"
+binding = "ASSETS"
+not_found_handling = "single-page-application"
+run_worker_first = ["/api/*", "/img/*"]
+
+# Cloudflare D1 数据库（用户/模型/历史/积分）
+[[d1_databases]]
+binding = "DB"
+database_name = "corezen_db"
+database_id = "REPLACE_WITH_D1_DATABASE_ID"
+
+# Cloudflare R2 图片存储
+[[r2_buckets]]
+binding = "BUCKET"
+bucket_name = "corezen-images"
+
+[vars]
+# 每日免费积分额度
+DAILY_CREDITS = "100"
+# 会话有效期（天）
+SESSION_TTL_DAYS = "30"
+# Codex 编程助手：中转端点与模型（密钥用 SHAREDCHAT_API_KEY secret 注入）
+CODEX_BASE_URL = "https://new.sharedchat.cc/codex"
+CODEX_MODEL = "gpt-5-codex"
+# 管理员邮箱白名单（逗号分隔）。用这些邮箱注册/登录即可访问 /api/admin 与前端「管理后台」。
+ADMIN_EMAILS = ""
+
+# 生图各 provider 的密钥用 wrangler secret 注入，例如：
+#   wrangler secret put OPENAI_API_KEY
+# models 表里的 api_key_ref 字段即指向这里的 secret 名。
