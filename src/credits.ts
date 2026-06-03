@@ -89,7 +89,7 @@ export async function deductCredits(
 // ============ Codex 独立积分池 ============
 
 function num(v: unknown, def: number): number {
-  const n = parseInt(String(v ?? ""), 10);
+  const n = parseFloat(String(v ?? ""));
   return Number.isFinite(n) ? n : def;
 }
 
@@ -97,7 +97,7 @@ function num(v: unknown, def: number): number {
 export async function ensureCodexCredits(env: Env, user: UserRow): Promise<UserRow> {
   const today = beijingDate();
   if (user.codex_reset_date === today) return user;
-  const daily = num(env.CODEX_DAILY_CREDITS, 100);
+  const daily = Math.max(0, Math.floor(num(env.CODEX_DAILY_CREDITS, 100)));
   const now = Date.now();
   await env.DB.batch([
     env.DB.prepare("UPDATE users SET codex_credits = ?, codex_reset_date = ? WHERE id = ?").bind(
