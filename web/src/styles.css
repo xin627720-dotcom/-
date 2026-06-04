@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 html,
@@ -12,13 +12,23 @@ body,
 
 body {
   margin: 0;
-  background: #0a0a0f;
-  color: #e7e7ea;
+  background: #f5f6fa;
+  color: #1e293b;
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
-/* 细滚动条 */
+/* 细滚动条（浅色） */
 * {
   scrollbar-width: thin;
-  scrollbar-color: #2a2a35 transparent;
+  scrollbar-color: #cbd5e1 transparent;
+}
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 8px;
 }

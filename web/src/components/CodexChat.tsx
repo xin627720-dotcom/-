@@ -15,7 +15,7 @@ function renderContent(text: string) {
       return (
         <pre
           key={i}
-          className="my-2 p-3 bg-neutral-950 border border-neutral-800 rounded-lg overflow-x-auto text-[13px] leading-relaxed"
+          className="my-2 p-3 bg-slate-900 text-slate-100 rounded-xl overflow-x-auto text-[13px] leading-relaxed"
         >
           <code>{code}</code>
         </pre>
@@ -122,14 +122,15 @@ export default function CodexChat({ onUsed }: { onUsed?: () => void }) {
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-3.5rem)]">
+    <div className="flex flex-col h-[calc(100vh-4rem)]">
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 sm:px-6 py-6">
         <div className="max-w-3xl mx-auto space-y-5">
           {messages.length === 0 && (
-            <div className="text-center text-neutral-600 mt-20">
-              <div className="text-2xl mb-2">⌘</div>
-              <p className="text-sm">Codex 云端编程助手 · 让它帮你写代码、解释或调试</p>
-              <p className="text-xs mt-2 text-neutral-700">例如：“用 Python 写一个快速排序并解释复杂度”</p>
+            <div className="text-center text-slate-400 mt-20">
+              <div className="text-3xl mb-3">💻</div>
+              <p className="text-sm text-slate-600 font-medium">Codex 云端编程助手</p>
+              <p className="text-xs mt-1.5 text-slate-400">让它帮你写代码、解释或调试</p>
+              <p className="text-xs mt-3 text-slate-400">例如：“用 Python 写一个快速排序并解释复杂度”</p>
             </div>
           )}
           {messages.map((m, i) => (
@@ -137,15 +138,15 @@ export default function CodexChat({ onUsed }: { onUsed?: () => void }) {
               <div
                 className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
                   m.role === "user"
-                    ? "bg-indigo-600 text-white"
-                    : "bg-neutral-900 border border-neutral-800 text-neutral-200"
+                    ? "bg-indigo-600 text-white shadow-sm shadow-indigo-200"
+                    : "bg-white border border-slate-200 text-slate-800 shadow-sm"
                 }`}
               >
                 {m.role === "assistant" && streaming && i === messages.length - 1 && !m.content ? (
                   <span className="inline-flex gap-1">
-                    <span className="w-1.5 h-1.5 bg-neutral-500 rounded-full animate-bounce" />
-                    <span className="w-1.5 h-1.5 bg-neutral-500 rounded-full animate-bounce [animation-delay:0.15s]" />
-                    <span className="w-1.5 h-1.5 bg-neutral-500 rounded-full animate-bounce [animation-delay:0.3s]" />
+                    <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" />
+                    <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce [animation-delay:0.15s]" />
+                    <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce [animation-delay:0.3s]" />
                   </span>
                 ) : (
                   renderContent(m.content)
@@ -156,9 +157,9 @@ export default function CodexChat({ onUsed }: { onUsed?: () => void }) {
         </div>
       </div>
 
-      <div className="border-t border-neutral-800 px-4 sm:px-6 py-3">
+      <div className="border-t border-slate-200 bg-white px-4 sm:px-6 py-3">
         <div className="max-w-3xl mx-auto">
-          {error && <div className="text-sm text-rose-400 mb-2">{error}</div>}
+          {error && <div className="text-sm text-rose-600 mb-2">{error}</div>}
           <div className="flex gap-2 items-end">
             <textarea
               value={input}
@@ -171,12 +172,12 @@ export default function CodexChat({ onUsed }: { onUsed?: () => void }) {
               }}
               rows={1}
               placeholder="输入编程问题，Enter 发送，Shift+Enter 换行"
-              className="flex-1 resize-none max-h-40 px-3 py-2.5 bg-neutral-900 border border-neutral-800 rounded-xl text-sm outline-none focus:border-indigo-500"
+              className="flex-1 resize-none max-h-40 px-3 py-2.5 bg-white border border-slate-300 rounded-xl text-sm text-slate-900 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition"
             />
             <button
               onClick={send}
               disabled={streaming || !input.trim()}
-              className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 rounded-xl text-sm font-medium transition"
+              className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white disabled:opacity-50 rounded-xl text-sm font-semibold shadow-sm shadow-indigo-200 transition"
             >
               {streaming ? "…" : "发送"}
             </button>

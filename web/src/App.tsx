@@ -33,7 +33,7 @@ export default function App() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-neutral-600 text-sm">加载中…</div>
+      <div className="min-h-screen flex items-center justify-center text-slate-400 text-sm bg-slate-50">加载中…</div>
     );
   }
 
