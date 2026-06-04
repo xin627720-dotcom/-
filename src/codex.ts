@@ -75,12 +75,18 @@ export async function handleCodexChat(
 
   if (!upstream.ok || !upstream.body) {
     const text = await upstream.text().catch(() => "");
+    const looksHtml = /^\s*<(?:!doctype|html)/i.test(text);
     let msg = `Codex 服务返回错误（HTTP ${upstream.status}）`;
-    try {
-      const j = JSON.parse(text) as { error?: { message?: string } };
-      if (j.error?.message) msg = j.error.message;
-    } catch {
-      if (text) msg += `：${text.slice(0, 300)}`;
+    if ((upstream.status === 403 || upstream.status === 503) && looksHtml) {
+      // 上游被 Cloudflare 等防护拦截，返回的是 HTML 拦截页而非 API 响应
+      msg = "Codex 上游被防护墙拦截（无法从服务器直连）。请在管理配置里改用可服务端调用的 OpenAI 兼容端点。";
+    } else {
+      try {
+        const j = JSON.parse(text) as { error?: { message?: string } };
+        if (j.error?.message) msg = j.error.message;
+      } catch {
+        if (text && !looksHtml) msg += `：${text.slice(0, 200)}`;
+      }
     }
     return c.json({ error: msg }, 502);
   }

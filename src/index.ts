@@ -117,6 +117,7 @@ app.post("/api/generate", requireAuth, handleGenerate);
 // ---------- Codex 编程助手（流式对话）----------
 app.post("/api/codex/chat", requireAuth, handleCodexChat);
 
+
 // ---------- 历史 ----------
 app.get("/api/history", requireAuth, async (c) => {
   const user = c.get("user");
