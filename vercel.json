@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/", "destination": "/saturn-gesture-particles/saturn-mobile.html" },
+    { "source": "/desktop", "destination": "/saturn-gesture-particles/index.html" }
+  ]
+}
