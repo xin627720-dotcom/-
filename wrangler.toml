@@ -1,0 +1,51 @@
+name = "corezen-image-studio"
+main = "src/index.ts"
+compatibility_date = "2025-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+# 自定义域：把 corezen.top 指向本 Worker（需 zone 在同一账号 + DNS:Edit 权限）
+routes = [
+  { pattern = "corezen.top", custom_domain = true }
+]
+# 保留 *.workers.dev 备用地址（自定义域证书签发期间方便访问）
+workers_dev = true
+
+# 前端构建产物作为静态资源托管；未命中静态文件时回落到 Worker (SPA + /api)
+[assets]
+directory = "./web/dist"
+binding = "ASSETS"
+not_found_handling = "single-page-application"
+run_worker_first = ["/api/*", "/img/*"]
+
+# Cloudflare D1 数据库（用户/模型/历史/积分）
+[[d1_databases]]
+binding = "DB"
+database_name = "corezen_db"
+database_id = "39c77c6a-7e4c-406a-82d5-a49977bc16bd"
+
+# 图片对象存储：Supabase Storage（替代 R2，免费、无需绑卡）。
+# 私有桶 "images"；服务端用 SUPABASE_SERVICE_KEY（secret）上传/回源。
+# 缺少 service key 时图像生成返回 503，不影响 Codex / 登录 / 积分 / 管理后台。
+
+[vars]
+# 图片存储（Supabase Storage）项目地址；service key 用 secret 注入
+SUPABASE_URL = "https://skvtpphpvwazhpgqytqb.supabase.co"
+# 每日免费积分额度（图像生成池）
+DAILY_CREDITS = "100"
+# 会话有效期（天）
+SESSION_TTL_DAYS = "30"
+# Codex 编程助手：中转端点与模型（密钥用 SHAREDCHAT_API_KEY secret 注入）
+CODEX_BASE_URL = "https://new.sharedchat.cc/codex"
+CODEX_MODEL = "gpt-5-codex"
+# Codex 独立积分池。计费口径：1 积分 = $0.001（1000 积分 = $1）。
+# 费率 = 每 1k token 消耗的积分；按 gpt-5-codex 估算（输入≈$1.25/1M、输出≈$10/1M）。
+# 每日额度 20000 积分 ≈ $20/人/天。三项均可按实际定价/预算调整。
+CODEX_DAILY_CREDITS = "20000"
+CODEX_IN_PER_1K = "1.25"
+CODEX_OUT_PER_1K = "10"
+# 管理员邮箱白名单（逗号分隔）。用这些邮箱注册/登录即可访问 /api/admin 与前端「管理后台」。
+ADMIN_EMAILS = "xin627720@gmail.com"
+
+# 生图各 provider 的密钥用 wrangler secret 注入，例如：
+#   wrangler secret put OPENAI_API_KEY
+# models 表里的 api_key_ref 字段即指向这里的 secret 名。

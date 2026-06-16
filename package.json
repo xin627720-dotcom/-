@@ -1,0 +1,37 @@
+{
+  "name": "corezen-image-studio",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev:web": "vite",
+    "build": "vite build",
+    "dev": "npm run build && wrangler dev",
+    "deploy": "npm run build && wrangler deploy",
+    "db:init:local": "wrangler d1 execute corezen_db --local --file=./migrations/0001_init.sql",
+    "db:init:remote": "wrangler d1 execute corezen_db --remote --file=./migrations/0001_init.sql",
+    "db:seed:local": "wrangler d1 execute corezen_db --local --file=./migrations/0002_seed.sql",
+    "db:seed:remote": "wrangler d1 execute corezen_db --remote --file=./migrations/0002_seed.sql",
+    "db:chat:local": "wrangler d1 execute corezen_db --local --file=./migrations/0003_chat.sql",
+    "db:chat:remote": "wrangler d1 execute corezen_db --remote --file=./migrations/0003_chat.sql",
+    "db:codex:local": "wrangler d1 execute corezen_db --local --file=./migrations/0004_codex_credits.sql",
+    "db:codex:remote": "wrangler d1 execute corezen_db --remote --file=./migrations/0004_codex_credits.sql",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "hono": "^4.6.14"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250101.0",
+    "@tailwindcss/vite": "^4.0.0",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^4.3.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.7",
+    "wrangler": "^4.0.0"
+  }
+}
