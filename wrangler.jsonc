@@ -1,0 +1,70 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "priceai-cloudflare-poc",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-06-11",
+  "compatibility_flags": [
+    "nodejs_compat",
+    "nodejs_compat_populate_process_env",
+    "global_fetch_strictly_public"
+  ],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "observability": {
+    "enabled": true
+  },
+  "routes": [
+    {
+      "pattern": "cf.priceai.cc",
+      "custom_domain": true
+    },
+    {
+      "pattern": "priceai.cc/*",
+      "zone_name": "priceai.cc"
+    },
+    {
+      "pattern": "www.priceai.cc/*",
+      "zone_name": "priceai.cc"
+    }
+  ],
+  "services": [
+    {
+      "binding": "WORKER_SELF_REFERENCE",
+      "service": "priceai-cloudflare-poc"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "NEXT_INC_CACHE_R2_BUCKET",
+      "bucket_name": "priceai-cloudflare-poc-opennext-cache"
+    },
+    {
+      "binding": "FEEDBACK_EVIDENCE_BUCKET",
+      "bucket_name": "priceai-feedback-evidence"
+    }
+  ],
+  "secrets": {
+    "required": [
+      "NEXT_PUBLIC_SUPABASE_URL",
+      "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+      "SUPABASE_SERVICE_ROLE_KEY",
+      "ADMIN_PASSWORD",
+      "ADMIN_SESSION_SECRET",
+      "ADMIN_SESSION_VERSION",
+      "CRON_SECRET",
+      "API_TRANSIT_CREDENTIAL_ENCRYPTION_KEY",
+      "PRICEAI_RISK_REVIEW_API_KEY",
+      "PRICEAI_RISK_REVIEW_BASE_URL",
+      "PRICEAI_RISK_REVIEW_MODEL",
+      "NEXT_PUBLIC_GA_MEASUREMENT_ID"
+    ]
+  },
+  "vars": {
+    "CRON_PUBLIC_BASE_URL": "https://priceai.cc",
+    "NEXT_PUBLIC_UMAMI_SCRIPT_URL": "https://umami.dimthink.com/script.js",
+    "NEXT_PUBLIC_UMAMI_WEBSITE_ID": "ded26a4f-77c4-45ed-86ef-774b0fed0ef6",
+    "NEXT_PUBLIC_UMAMI_ALLOWED_DOMAINS": "priceai.cc,www.priceai.cc"
+  }
+}

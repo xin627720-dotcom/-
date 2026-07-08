@@ -1,0 +1,65 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+/.open-next/
+/.wrangler/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+/tmp/
+
+# local agent/workflow artifacts
+/.agents/
+/.claude/
+/.codex/
+/.impeccable/
+/.trellis/
+/.omo/
+/AGENTS.md
+/CLAUDE.md
+/PRODUCT.md
+/DESIGN.md
+/lark-auth-priceai-sponsor.png
+
+# local/manual workflow drafts
+/scripts/refine-ldxp-probe-relevance.mjs
+
+# local docs kept off GitHub and production deploys
+/docs/
+
+# env files (can opt-in for committing if needed)
+.env*
+!.env.example
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+.gstack/
