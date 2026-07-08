@@ -1,0 +1,565 @@
+[
+  {
+    "id": "zivv-pro",
+    "name": "Zivv",
+    "websiteUrl": "https://zivv.pro/",
+    "apiBaseUrl": "https://zivv.pro/v1",
+    "pricingUrl": "https://zivv.pro/model-hub",
+    "pricingEndpointUrl": "https://zivv.pro/api/models/hub",
+    "monitorUrl": "https://status.zivv.pro/",
+    "monitorEndpointUrl": "https://status.zivv.pro/api/status?window=7d",
+    "collectorKind": "zivv_model_hub",
+    "rechargeRatio": "1:1",
+    "autoPublish": false,
+    "channelTypes": ["first_party_pool", "official_api", "reverse_engineered", "undisclosed"],
+    "accountPools": ["max", "pro", "plus", "official_api", "undisclosed"],
+    "paymentMethods": ["人民币支付"],
+    "supportChannels": ["Telegram 群", "QQ 交流群"],
+    "riskLabels": ["mixed_pool", "undisclosed_upstream", "pending_feedback"],
+    "summary": "公开模型广场接口可读取，前端为 Zivv 自研 React 控制台，非 New API 默认模板。页面和 site-config 均显示充值汇率为 ¥1 = $1；模型广场公开 Claude MAX、Claude 官转、Codex Pro、Gemini Anti 等分组价格。状态页公开存在，但 PriceAI 尚未使用测试 Key 做真实调用可用性检测。",
+    "strengths": [
+      "公开 /api/models/hub 返回模型、分组、美元/百万 token 价格、上下文和能力标签，可重复采集。",
+      "公开站点说明同时支持 OpenAI、Anthropic、Gemini 三大协议，site-config 暴露站点 API Base 和联系方式。",
+      "状态页 https://status.zivv.pro/ 可访问，可作为后续可用性监测参考入口。"
+    ],
+    "cautions": [
+      "价格来自 Zivv 公开模型广场，尚未用 PriceAI 测试 Key 验证真实扣费和可用性。",
+      "分组包含 Claude Anti、Codex Plus 等标注不稳定或上游未完整披露的渠道，需要小额试用。",
+      "GPT Image 2 为固定按次计费，当前不会强行转成 PriceAI 的 token 倍率报价，仅保留在原始快照。"
+    ],
+    "verificationEvents": [
+      {
+        "id": "zivv-public-model-hub-2026-06-30",
+        "source": "priceai",
+        "status": "success",
+        "title": "公开模型广场接口可读取",
+        "description": "2026-06-30 检查 https://zivv.pro/api/models/hub 返回 18 个模型，含 Claude/GPT/Gemini 分组价格；/v1/models 需要 API Key，不作为公开价格源。",
+        "happenedAt": "2026-06-30T07:20:00.000Z"
+      },
+      {
+        "id": "zivv-custom-console-2026-06-30",
+        "source": "priceai",
+        "status": "info",
+        "title": "前端资源显示自研控制台",
+        "description": "站点为 Vite/React 控制台，包含自有登录、Key、团队、供应商、渠道统计、模型广场等模块；未发现 New API 默认模板特征。",
+        "happenedAt": "2026-06-30T07:20:00.000Z"
+      }
+    ]
+  },
+  {
+    "id": "sub-dimension-cc-cd",
+    "name": "Sub2API 测试公开页",
+    "websiteUrl": "https://sub.dimension.cc.cd/",
+    "apiBaseUrl": "https://sub.dimension.cc.cd/v1",
+    "pricingUrl": "https://sub.dimension.cc.cd/public/transit",
+    "pricingEndpointUrl": "https://sub.dimension.cc.cd/api/public/transit/v1/snapshot",
+    "monitorUrl": "https://sub.dimension.cc.cd/public/transit?view=monitoring",
+    "collectorKind": "ai_transit_snapshot",
+    "stationSystem": "sub_to_api",
+    "rechargeRatio": "1:1",
+    "autoPublish": true,
+    "channelTypes": ["mixed", "first_party_pool", "undisclosed"],
+    "accountPools": ["mixed", "undisclosed"],
+    "riskLabels": ["mixed_pool", "insufficient_samples", "pending_feedback"],
+    "summary": "Sub2API ai-transit.v1 测试公开页，提供 /.well-known/ai-transit.json 发现文件和 /api/public/transit/v1/snapshot 结构化快照；PriceAI 会自动抓取分组倍率、模型价格、缓存价格和公开监控时间线，真实扣费仍需测试 Key 核验。",
+    "strengths": [
+      "公开 ai-transit.v1 快照可稳定读取，字段包含分组、模型价格、充值比例、缓存价格和公开监测。",
+      "提供 .well-known 发现文件，适合后续自动发现和标准化接入验证。"
+    ],
+    "cautions": [
+      "当前公开快照模型覆盖较少，主要用于 Sub2API 公开标准联调。",
+      "公开可用性来自站点监控，不等同 PriceAI API Key 实测。"
+    ],
+    "verificationEvents": [
+      {
+        "id": "sub-dimension-ai-transit-v1-2026-07-05",
+        "source": "priceai",
+        "status": "success",
+        "title": "ai-transit.v1 公开快照可读取",
+        "description": "2026-07-05 检查 https://sub.dimension.cc.cd/.well-known/ai-transit.json 可发现 snapshot_url，/api/public/transit/v1/snapshot 返回分组、模型价格和公开监控时间线。",
+        "happenedAt": "2026-07-05T08:40:00.000Z"
+      }
+    ]
+  },
+  {
+    "id": "onehop-ai",
+    "name": "OneHop",
+    "websiteUrl": "https://onehop.ai/",
+    "apiBaseUrl": "https://api.onehop.ai/v1",
+    "pricingUrl": "https://onehop.ai/platform/models",
+    "pricingEndpointUrl": "https://api.onehop.ai/public/models?locale=zh-Hans&limit=100",
+    "collectorKind": "onehop_public_models",
+    "rechargeRatio": "6.8:1",
+    "autoPublish": false,
+    "channelTypes": ["official_api", "reverse_engineered", "undisclosed"],
+    "accountPools": ["official_api", "kiro"],
+    "supportChannels": ["在线客服"],
+    "riskLabels": ["insufficient_samples", "undisclosed_upstream"],
+    "summary": "公开模型目录可读取，提供模型价格、官方对照价格和近 14 日可用性样本；前端和计费/活动模块为 OneHop 自研控制台，后台存在 Sub2API 上游只读镜像，不按 New API 归类。充值口径按商家说明记录为 6.8 元兑换 1 美元。",
+    "strengths": [
+      "公开模型目录包含 OneHop 价格、官方价格对照、协议能力和近 14 日 uptime 样本。",
+      "标准模型覆盖 GPT、Claude、Gemini、GLM、DeepSeek、图片生成和视频生成，并区分 Official 与 Kiro 来源。"
+    ],
+    "cautions": [
+      "公开 uptime 来自 OneHop 页面，不等同 PriceAI 使用测试 Key 的实测结果。",
+      "控制台 bundle 存在 Sub2API 上游只读镜像信息，实际上游与路由策略仍需商家补充。"
+    ],
+    "commercialOffers": [
+      {
+        "id": "onehop-priceai-068",
+        "type": "coupon",
+        "title": "首充 6.8 折",
+        "listLabel": "首充 6.8 折",
+        "description": "注册后赠送体验金 1$，参加官方活动可再赠 10$，首次充值填写 PRICEAI 优惠码，享受 6.8 折优惠。",
+        "code": "PRICEAI",
+        "url": "https://onehop.ai/invite/EYPFRA",
+        "validUntil": null,
+        "disclosure": "该访问链接包含 AFF，但不影响页面排序及价格口径；注册后请回原站核验活动规则、充值比例和退款规则。",
+        "enabled": true
+      }
+    ]
+  },
+  {
+    "id": "mfttai-com",
+    "name": "MFAPI",
+    "websiteUrl": "https://mfttai.com/register?aff=PRICEAI",
+    "apiBaseUrl": "https://mfttai.com/v1",
+    "pricingUrl": "https://mfttai.com/public/transit",
+    "pricingEndpointUrl": "https://mfttai.com/api/public/transit/v1/snapshot",
+    "monitorUrl": "https://mfttai.com/public/transit?view=monitoring",
+    "collectorKind": "ai_transit_snapshot",
+    "stationSystem": "sub_to_api",
+    "rechargeRatio": "1:1",
+    "autoPublish": true,
+    "channelTypes": ["official_api", "cloud", "first_party_pool", "reverse_engineered", "mixed", "undisclosed"],
+    "accountPools": ["official_api", "kiro", "mixed", "undisclosed"],
+    "supportChannels": ["VX：lyw2465885900"],
+    "riskLabels": ["mixed_pool", "insufficient_samples", "pending_feedback"],
+    "summary": "MFAPI 使用 Sub2API 系统，公开 ai-transit.v1 快照可读取 AWS、Kiro、官转、GPT、Gemini、CNV 和图像分组的倍率、模型价格、7 日缓存命中率和公开监测时间线；可用率来自站点公开监测，不等同 PriceAI API Key 实测。",
+    "strengths": [
+      "公开 /.well-known/ai-transit.json 可发现结构化快照，/api/public/transit/v1/snapshot 返回分组、模型价格、缓存命中率和监控时间线。",
+      "快照无需登录即可读取，可在原有 PriceAI 实测 Key 监测之外补充站方公开价格、7 日缓存命中率和 7 日可用率。"
+    ],
+    "cautions": [
+      "公开监测样本来自 MFAPI 页面，不等同 PriceAI 使用测试 Key 的真实扣费和可用性检测。",
+      "公开披露为混合上游并包含逆向渠道，首次使用仍建议小额测试。"
+    ],
+    "verificationEvents": [
+      {
+        "id": "mfttai-ai-transit-v1-2026-07-08",
+        "source": "priceai",
+        "status": "success",
+        "title": "ai-transit.v1 公开快照可读取",
+        "description": "2026-07-08 检查 https://mfttai.com/.well-known/ai-transit.json 可发现 snapshot_url，/api/public/transit/v1/snapshot 返回分组、模型价格、7 日缓存命中率和公开监控时间线。",
+        "happenedAt": "2026-07-08T00:35:00.000Z"
+      }
+    ]
+  },
+  {
+    "id": "wawazz-xyz",
+    "name": "WAWA ZZ API",
+    "websiteUrl": "https://wawazz.xyz/",
+    "apiBaseUrl": "https://wawazz.xyz/v1",
+    "pricingUrl": "https://wawazz.xyz/public/transit",
+    "pricingEndpointUrl": "https://wawazz.xyz/api/public/transit/v1/snapshot",
+    "monitorUrl": "https://wawazz.xyz/public/transit?view=monitoring",
+    "collectorKind": "ai_transit_snapshot",
+    "stationSystem": "sub_to_api",
+    "rechargeRatio": "1:1",
+    "autoPublish": true,
+    "disableGlobalModelAvailabilityFallback": true,
+    "groupAliases": {
+      "cc-max分组": "claude-max-号池-不限制客户端",
+      "gpt-plus分组": "gpt-plus",
+      "gpt-pro分组": "gpt-pro"
+    },
+    "aiTransitGroupModels": {
+      "claude-krio": ["Claude Opus 4.8"],
+      "claude-krio-power": ["Claude Opus 4.8"],
+      "claude-max-号池-不限制客户端": ["Claude Opus 4.8"],
+      "gpt-plus": ["GPT 5.4", "GPT 5.5"],
+      "gpt-pro": ["GPT 5.5"],
+      "生图专用分组": ["GPT 5.5"]
+    },
+    "channelTypes": ["first_party_pool", "reverse_engineered", "mixed", "undisclosed"],
+    "accountPools": ["plus", "pro", "max", "kiro", "mixed", "undisclosed"],
+    "supportChannels": ["qq群：1073408363"],
+    "riskLabels": ["mixed_pool", "insufficient_samples", "pending_feedback"],
+    "summary": "WAWA ZZ API 使用 Sub2API 系统，公开 ai-transit.v1 快照可读取 Claude、GPT 和生图分组倍率、7 日缓存命中率和公开监测时间线；该快照未公开逐模型价格，PriceAI 按已知分组模型对应关系将最新分组倍率映射到标准模型。可用率来自站点公开监测与 PriceAI 实测合并，PriceAI 实测优先。",
+    "strengths": [
+      "公开 /.well-known/ai-transit.json 可发现结构化快照，/api/public/transit/v1/snapshot 返回分组倍率、缓存命中率和监控时间线。",
+      "gpt-plus、gpt-pro、claude-krio 等分组可与 PriceAI 已有 WAWA 标准模型对应，适合补充最新公开价格和 7 日缓存命中率。"
+    ],
+    "cautions": [
+      "当前公开快照未返回逐模型 pricing 列表，PriceAI 按分组倍率映射到已知标准模型，不代表站点公开了完整模型目录。",
+      "公开披露为混合上游并包含逆向渠道，首次使用仍建议小额测试。"
+    ],
+    "verificationEvents": [
+      {
+        "id": "wawazz-ai-transit-v1-2026-07-08",
+        "source": "priceai",
+        "status": "success",
+        "title": "ai-transit.v1 公开快照可读取",
+        "description": "2026-07-08 检查 https://wawazz.xyz/.well-known/ai-transit.json 可发现 snapshot_url，/api/public/transit/v1/snapshot 返回分组倍率、7 日缓存命中率和公开监控时间线；快照未返回逐模型 pricing 列表，需按既有分组模型对应关系映射。",
+        "happenedAt": "2026-07-08T06:40:00.000Z"
+      }
+    ]
+  },
+  {
+    "id": "apinode-ltd",
+    "name": "APINode",
+    "websiteUrl": "https://apinode.ltd/",
+    "apiBaseUrl": "https://apinode.ltd/v1",
+    "pricingUrl": "https://apinode.ltd/public/transit",
+    "pricingEndpointUrl": "https://apinode.ltd/api/public/transit/v1/snapshot",
+    "monitorUrl": "https://apinode.ltd/public/transit?view=monitoring",
+    "collectorKind": "ai_transit_snapshot",
+    "stationSystem": "sub_to_api",
+    "commercialRelation": "partner",
+    "rechargeRatio": "1:1",
+    "autoPublish": true,
+    "channelTypes": ["first_party_pool", "mixed", "undisclosed"],
+    "accountPools": ["plus", "team", "pro"],
+    "riskLabels": ["insufficient_samples", "pending_feedback"],
+    "summary": "APINode 使用 Sub2API 系统，公开 ai-transit.v1 快照可读取分组倍率、模型价格、缓存价格、缓存命中率和公开监测时间线；可用率来自站点公开监测，不等同 PriceAI API Key 实测。",
+    "strengths": [
+      "公开 /.well-known/ai-transit.json 可发现结构化快照，/api/public/transit/v1/snapshot 返回 Plus/Team/Pro 分组、模型价格和监控时间线。",
+      "快照无需登录即可读取，能作为 APINode 公开价格、缓存命中率和公开监测样本的稳定来源。"
+    ],
+    "cautions": [
+      "公开监测样本来自 APINode 页面，不等同 PriceAI 使用测试 Key 的真实扣费和可用性检测。",
+      "image2 渠道按图像生成报价处理，不作为 GPT 文本最低价。"
+    ],
+    "commercialOffers": [
+      {
+        "id": "apinode-registration-bonus",
+        "type": "coupon",
+        "title": "注册填码送 $6.88 余额",
+        "listLabel": "注册赠送 $6.88",
+        "description": "注册时填写优惠码 PRICEAI，可获得 $6.88 余额；首充送 $3.88 余额，前 10 次充值享 8 折。使用前请以原站活动规则为准。",
+        "code": "PRICEAI",
+        "url": "https://apinode.ltd/register?promo=PRICEAI",
+        "validUntil": null,
+        "disclosure": "该访问链接包含 AFF，但不影响页面排序及价格口径；注册后请回原站核验活动规则、充值比例和退款规则。",
+        "enabled": true
+      }
+    ]
+  },
+  {
+    "id": "sub-callai-one",
+    "name": "Sub Callai One",
+    "websiteUrl": "https://sub.callai.one/",
+    "apiBaseUrl": "https://sub.callai.one/v1",
+    "pricingUrl": "https://sub.callai.one/public/transit",
+    "pricingEndpointUrl": "https://sub.callai.one/api/public/transit/v1/snapshot",
+    "monitorUrl": "https://sub.callai.one/public/transit?view=monitoring",
+    "collectorKind": "ai_transit_snapshot",
+    "stationSystem": "sub_to_api",
+    "rechargeRatio": "1:1",
+    "autoPublish": true,
+    "groupAliases": {
+      "claude-kiro": "kiro",
+      "gpt": "gpt-pro号池"
+    },
+    "channelTypes": ["mixed", "first_party_pool", "undisclosed"],
+    "accountPools": ["kiro", "max", "pro"],
+    "riskLabels": ["mixed_pool", "insufficient_samples", "pending_feedback"],
+    "summary": "Sub Callai One 使用 Sub2API 系统，公开 ai-transit.v1 快照可读取分组倍率、模型价格、缓存价格和公开监测时间线；可用率来自站点公开监测，不等同 PriceAI API Key 实测。",
+    "strengths": [
+      "公开 /.well-known/ai-transit.json 可发现结构化快照，/api/public/transit/v1/snapshot 返回 Kiro/Max/Pro 分组、模型价格和监控时间线。",
+      "快照无需 partner token 即可读取，能作为 Sub Callai One 公开价格、缓存价格和公开监测样本的稳定来源。"
+    ],
+    "cautions": [
+      "公开监测样本来自 Sub Callai One 页面，不等同 PriceAI 使用测试 Key 的真实扣费和可用性检测。",
+      "分组包含混合上游和账号池标签，首次使用仍建议小额测试。"
+    ],
+    "verificationEvents": [
+      {
+        "id": "sub-callai-ai-transit-v1-2026-07-07",
+        "source": "priceai",
+        "status": "success",
+        "title": "ai-transit.v1 公开快照可读取",
+        "description": "2026-07-07 检查 https://sub.callai.one/.well-known/ai-transit.json 可发现 snapshot_url，/api/public/transit/v1/snapshot 返回分组、模型价格、缓存价格和公开监控时间线。",
+        "happenedAt": "2026-07-07T09:15:00.000Z"
+      }
+    ]
+  },
+  {
+    "id": "aliuapi-top",
+    "name": "A6-API",
+    "websiteUrl": "https://aliuapi.top/",
+    "apiBaseUrl": "https://aliuapi.top/v1",
+    "pricingUrl": "https://aliuapi.top/public/transit",
+    "pricingEndpointUrl": "https://aliuapi.top/api/public/transit/v1/snapshot",
+    "monitorUrl": "https://aliuapi.top/public/transit?view=monitoring",
+    "collectorKind": "ai_transit_snapshot",
+    "stationSystem": "sub_to_api",
+    "rechargeRatio": "1:1",
+    "autoPublish": true,
+    "groupAliases": {
+      "Plus": "T0 - GPT Plus",
+      "Pro": "T1 - GPT Pro"
+    },
+    "channelTypes": ["first_party_pool", "undisclosed"],
+    "accountPools": ["plus", "pro"],
+    "supportChannels": ["Telegram @FreedomSurprise"],
+    "riskLabels": ["insufficient_samples", "pending_feedback"],
+    "summary": "A6-API 使用 Sub2API 系统，公开 ai-transit.v1 快照可读取 GPT Plus / GPT Pro 分组倍率、模型价格、缓存命中率和公开监测时间线；可用率来自站点公开监测，不等同 PriceAI API Key 实测。",
+    "strengths": [
+      "公开 /.well-known/ai-transit.json 可发现结构化快照，/api/public/transit/v1/snapshot 返回 GPT Plus / GPT Pro 分组、模型价格、缓存命中率和监控时间线。",
+      "快照无需登录或 Turnstile 即可读取，可替代原先需要后台登录态的分组采集路径。"
+    ],
+    "cautions": [
+      "公开监测样本来自 A6-API 页面，不等同 PriceAI 使用测试 Key 的真实扣费和可用性检测。",
+      "当前公开快照主要覆盖 GPT 文本和图像模型，首次使用仍建议小额测试。"
+    ],
+    "commercialOffers": [
+      {
+        "id": "aliuapi-top-purchase-link",
+        "type": "merchant_purchase_link",
+        "title": "购买兑换码",
+        "listLabel": "兑换码",
+        "description": "站点公开配置提供兑换码购买入口；充值和退款规则请以原站说明为准。",
+        "url": "https://pay.ldxp.cn/shop/ITG5M4RZ",
+        "validUntil": null,
+        "disclosure": "该链接来自站点公开配置；PriceAI 仅整理公开资料，不参与交易担保。",
+        "enabled": true
+      }
+    ],
+    "verificationEvents": [
+      {
+        "id": "aliuapi-ai-transit-v1-2026-07-07",
+        "source": "priceai",
+        "status": "success",
+        "title": "ai-transit.v1 公开快照可读取",
+        "description": "2026-07-07 检查 https://aliuapi.top/.well-known/ai-transit.json 可发现 snapshot_url，/api/public/transit/v1/snapshot 返回分组、模型价格、缓存命中率和公开监控时间线。",
+        "happenedAt": "2026-07-07T12:11:25.000Z"
+      }
+    ]
+  },
+  {
+    "id": "999555999-com",
+    "name": "猫肥NekoAPI",
+    "websiteUrl": "https://www.999555999.com/",
+    "apiBaseUrl": "https://api.999555999.com/v1",
+    "pricingUrl": "https://api.999555999.com/public/transit",
+    "pricingEndpointUrl": "https://api.999555999.com/api/public/transit/v1/snapshot",
+    "monitorUrl": "https://api.999555999.com/public/transit?view=monitoring",
+    "timeoutMs": 45000,
+    "collectorKind": "ai_transit_snapshot",
+    "stationSystem": "sub_to_api",
+    "rechargeRatio": "1:1",
+    "autoPublish": true,
+    "channelTypes": ["first_party_pool", "mixed", "undisclosed"],
+    "accountPools": ["max", "pro", "mixed", "undisclosed"],
+    "supportChannels": ["QQ：839371702"],
+    "riskLabels": ["mixed_pool", "insufficient_samples", "pending_feedback"],
+    "summary": "猫肥NekoAPI 已有 PriceAI 实测记录；本配置在原站点上补充 Sub2API ai-transit.v1 公开快照，可读取 CC MAX 官转、Pro 号池、生图和低倍率分组的模型价格、缓存命中率与站方公开监测时间线。站方公开监测不等同 PriceAI API Key 实测。",
+    "strengths": [
+      "公开 /.well-known/ai-transit.json 可发现结构化快照，/api/public/transit/v1/snapshot 返回分组倍率、模型价格、缓存命中率和监控时间线。",
+      "快照无需登录即可读取，包含 Claude、GPT、图像等分组，适合 PriceAI 定时自动刷新。"
+    ],
+    "cautions": [
+      "站方公开监测样本来自猫肥NekoAPI 页面，不等同 PriceAI 使用测试 Key 的真实扣费和可用性检测。",
+      "分组包含低倍率和混合上游口径，首次使用仍建议小额测试。"
+    ],
+    "verificationEvents": [
+      {
+        "id": "999555999-ai-transit-v1-2026-07-07",
+        "source": "priceai",
+        "status": "success",
+        "title": "ai-transit.v1 公开快照可读取",
+        "description": "2026-07-07 检查 https://api.999555999.com/.well-known/ai-transit.json 可发现 snapshot_url，/api/public/transit/v1/snapshot 返回分组、模型价格、缓存命中率和公开监控时间线。",
+        "happenedAt": "2026-07-07T14:12:57.000Z"
+      }
+    ]
+  },
+  {
+    "id": "sudocode-chat",
+    "name": "SudoCode",
+    "websiteUrl": "https://sudocode.chat/",
+    "apiBaseUrl": "https://sudocode.chat/v1",
+    "pricingUrl": "https://sudocode.chat/#model-pricing",
+    "pricingEndpointUrl": "https://sudocode.chat/api/pricing",
+    "collectorKind": "new_api_pricing",
+    "channelTypes": ["undisclosed"],
+    "accountPools": ["undisclosed"],
+    "summary": "公开 New API 价格接口可读取，已进入 PriceAI API 中转站自动价格采集池；稳定性和真实扣费仍需测试 Key 或人工样本补充。"
+  },
+  {
+    "id": "packyapi-com",
+    "name": "PackyAPI",
+    "websiteUrl": "https://www.packyapi.com/",
+    "apiBaseUrl": "https://www.packyapi.com/v1",
+    "pricingUrl": "https://www.packyapi.com/pricing",
+    "pricingEndpointUrl": "https://www.packyapi.com/api/pricing",
+    "monitorUrl": "https://www.packyapi.com/status",
+    "collectorKind": "new_api_pricing",
+    "channelTypes": ["undisclosed"],
+    "accountPools": ["undisclosed"],
+    "summary": "公开 New API 价格接口可读取，已进入 PriceAI API 中转站自动价格采集池；稳定性和真实扣费仍需测试 Key 或人工样本补充。"
+  },
+  {
+    "id": "9527code-com",
+    "name": "9527Code",
+    "websiteUrl": "https://9527code.com/",
+    "apiBaseUrl": "https://9527code.com/v1",
+    "pricingUrl": "https://9527code.com/pricing",
+    "pricingEndpointUrl": "https://9527code.com/api/pricing",
+    "collectorKind": "new_api_pricing",
+    "channelTypes": ["undisclosed"],
+    "accountPools": ["undisclosed"],
+    "summary": "公开 New API 价格接口可读取，已进入 PriceAI API 中转站自动价格采集池；稳定性和真实扣费仍需测试 Key 或人工样本补充。"
+  },
+  {
+    "id": "ai-rtoc-cc",
+    "name": "RTOC AI",
+    "websiteUrl": "https://ai.rtoc.cc/",
+    "apiBaseUrl": "https://api.rtoc.cc/v1",
+    "pricingUrl": "https://ai.rtoc.cc/pricing",
+    "pricingEndpointUrl": "https://api.rtoc.cc/api/pricing",
+    "monitorUrl": "https://ai.rtoc.cc/pricing",
+    "monitorEndpointUrl": "https://api.rtoc.cc/api/perf-metrics/summary?period=24",
+    "collectorKind": "new_api_pricing",
+    "stationSystem": "new_api",
+    "channelTypes": ["undisclosed"],
+    "accountPools": ["undisclosed"],
+    "riskLabels": ["undisclosed_upstream", "pending_feedback"],
+    "summary": "公开前端为 New API，前端包和 /api/status 均指向服务端 https://api.rtoc.cc；公开 /api/pricing 可读取模型与分组倍率，公开 performance summary 可读取近 24 小时模型成功率。价格和公开稳定性可纳入定时采集，真实扣费仍需测试 Key 或人工样本补充。",
+    "strengths": [
+      "公开 /api/pricing 返回 New API 价格结构，包含 46 个模型和 GPT、GPT Pro、Kiro、Claude、生图等分组倍率。",
+      "/api/perf-metrics/summary 公开返回模型维度近 24 小时成功率、平均延迟和 TPS。",
+      "/api/status 公开返回 server_address 与 frontend_address，可确认前后端域名映射。"
+    ],
+    "cautions": [
+      "/api/ratio_config 未启用，分组倍率以 /api/pricing 返回的 group_ratio 为准。",
+      "/api/perf-metrics/summary 是站点公开监测口径，不等同于 PriceAI API Key 实测。",
+      "/v1/models 需要 API Key，当前公开稳定性不能替代真实扣费核验。"
+    ],
+    "verificationEvents": [
+      {
+        "id": "ai-rtoc-public-newapi-2026-07-02",
+        "source": "priceai",
+        "status": "success",
+        "title": "公开前端确认为 New API",
+        "description": "2026-07-02 检查 https://ai.rtoc.cc 前端资源，服务端地址为 https://api.rtoc.cc，公开状态接口返回 server_address 与 frontend_address。",
+        "happenedAt": "2026-07-02T08:40:00.000Z"
+      },
+      {
+        "id": "ai-rtoc-public-pricing-2026-07-02",
+        "source": "priceai",
+        "status": "success",
+        "title": "公开价格接口可读取",
+        "description": "2026-07-02 检查 https://api.rtoc.cc/api/pricing 返回 46 个模型和 7 个分组倍率；/api/ratio_config 未启用，/v1/models 需要 API Key。",
+        "happenedAt": "2026-07-02T08:40:00.000Z"
+      },
+      {
+        "id": "ai-rtoc-public-performance-2026-07-02",
+        "source": "priceai",
+        "status": "success",
+        "title": "公开 performance summary 可读取",
+        "description": "2026-07-02 检查 https://api.rtoc.cc/api/perf-metrics/summary?period=24 返回模型维度成功率、平均延迟与 TPS；该数据为公开监测口径，非 PriceAI API Key 实测。",
+        "happenedAt": "2026-07-02T13:30:00.000Z"
+      }
+    ]
+  },
+  {
+    "id": "kksj-org",
+    "name": "KK API",
+    "websiteUrl": "https://api.kksj.org/",
+    "apiBaseUrl": "https://api.kksj.org/v1",
+    "pricingUrl": "https://api.kksj.org/pricing",
+    "pricingEndpointUrl": "https://api.kksj.org/api/pricing",
+    "collectorKind": "new_api_pricing"
+  },
+  {
+    "id": "smartaipro-cn",
+    "name": "Smartaipro",
+    "websiteUrl": "https://fast.smartaipro.cn/",
+    "apiBaseUrl": "https://fast.smartaipro.cn/v1",
+    "pricingUrl": "https://fast.smartaipro.cn/pricing",
+    "pricingEndpointUrl": "https://fast.smartaipro.cn/api/pricing",
+    "collectorKind": "new_api_pricing"
+  },
+  {
+    "id": "8yes-cc",
+    "name": "8Yes API",
+    "websiteUrl": "https://8yes.cc/",
+    "apiBaseUrl": "https://8yes.cc/v1",
+    "pricingUrl": "https://8yes.cc/pricing",
+    "pricingEndpointUrl": "https://8yes.cc/api/pricing",
+    "collectorKind": "new_api_pricing"
+  },
+  {
+    "id": "4router-net",
+    "name": "4Router",
+    "websiteUrl": "https://4router.net/",
+    "apiBaseUrl": "https://4router.net/v1",
+    "pricingUrl": "https://4router.net/pricing",
+    "pricingEndpointUrl": "https://4router.net/api/pricing",
+    "collectorKind": "new_api_pricing"
+  },
+  {
+    "id": "88996-cloud",
+    "name": "88996 Cloud",
+    "websiteUrl": "https://88996.cloud/",
+    "apiBaseUrl": "https://88996.cloud/v1",
+    "pricingUrl": "https://88996.cloud/pricing",
+    "pricingEndpointUrl": "https://88996.cloud/api/pricing",
+    "collectorKind": "new_api_pricing_v2"
+  },
+  {
+    "id": "180txt-cn",
+    "name": "180txt API",
+    "websiteUrl": "https://www.180txt.cn/",
+    "apiBaseUrl": "https://www.180txt.cn/v1",
+    "pricingUrl": "https://www.180txt.cn/pricing",
+    "pricingEndpointUrl": "https://www.180txt.cn/api/pricing",
+    "collectorKind": "new_api_pricing"
+  },
+  {
+    "id": "micuapi-ai",
+    "name": "MiCu API",
+    "websiteUrl": "https://www.micuapi.ai/",
+    "apiBaseUrl": "https://www.micuapi.ai/v1",
+    "pricingUrl": "https://www.micuapi.ai/pricing",
+    "pricingEndpointUrl": "https://www.micuapi.ai/api/pricing",
+    "collectorKind": "new_api_pricing"
+  },
+  {
+    "id": "franklybuilds-api",
+    "name": "FranklyBuilds中转站",
+    "websiteUrl": "https://api.franklybuilds.com/",
+    "apiBaseUrl": "https://api.franklybuilds.com/v1",
+    "pricingUrl": "https://api.franklybuilds.com/pricing",
+    "pricingEndpointUrl": "https://api.franklybuilds.com/api/pricing",
+    "collectorKind": "new_api_pricing",
+    "channelTypes": ["first_party_pool", "reseller", "mixed"],
+    "accountPools": ["mixed", "undisclosed"],
+    "summary": "站长通过 PriceAI 表单提交，公开 New API 价格接口可读取；渠道包含自建号池、二级分销和混合渠道，需继续接入测试 Key 做可用性监测。"
+  },
+  {
+    "id": "longshang-pro",
+    "name": "LONGSHANG 龍殤",
+    "websiteUrl": "https://longshang.pro/",
+    "apiBaseUrl": "https://api.longshang.pro/v1",
+    "pricingUrl": "https://longshang.pro/pricing",
+    "pricingEndpointUrl": "https://api.longshang.pro/api/pricing",
+    "collectorKind": "new_api_pricing",
+    "channelTypes": ["first_party_pool", "reseller", "mixed"],
+    "accountPools": ["pro", "plus", "team", "mixed"],
+    "summary": "站长提交，公开 New API 价格接口可读取；提交说明包含低价、普通、高级渠道分组倍率，需继续用测试 Key 校验可用性和换算口径。"
+  },
+  {
+    "id": "api-aifoxspa-com",
+    "name": "aifox",
+    "websiteUrl": "https://api.aifoxspa.com/",
+    "apiBaseUrl": "https://api.aifoxspa.com/v1",
+    "pricingUrl": "https://pay.ldxp.cn/item/bvajcj",
+    "pricingEndpointUrl": "https://api.aifoxspa.com/api/pricing",
+    "collectorKind": "new_api_pricing",
+    "channelTypes": ["undisclosed"],
+    "accountPools": ["plus"],
+    "summary": "站长提交，公开 New API 价格接口可读取；提交说明包含 GPT Plus 0.30x 和 0.5R=1$ 口径，需继续用测试 Key 校验可用性。"
+  }
+]

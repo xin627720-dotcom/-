@@ -1,0 +1,131 @@
+PriceAI Source Available License 1.0
+
+Copyright (c) 2026 PriceAI contributors.
+
+This license is a source-available license. It is not an open source
+license as defined by the Open Source Initiative, because it restricts
+commercial hosting and competitive public services.
+
+1. Definitions
+
+"PriceAI" means the software, documentation, examples, configuration,
+and other materials distributed in this repository, unless a file says
+otherwise.
+
+"Licensor" means the PriceAI project maintainers and other copyright
+holders of PriceAI.
+
+"Official Service" means the PriceAI service operated by the Licensor,
+including https://priceai.cc and official project accounts or domains.
+
+"Commercial Use" means any use intended for commercial advantage,
+monetization, business operations, customer service, paid services,
+advertising, affiliate revenue, sponsorship, lead generation, resale,
+or other revenue-generating activity.
+
+"Public Hosted Service" means any website, SaaS, hosted application,
+API, crawler service, data service, comparison site, navigation site,
+or similar service made available to third parties over a network,
+whether access is paid or free.
+
+"Competitive Service" means any Public Hosted Service that is the same
+as or substantially similar to PriceAI's product positioning, including
+AI subscription comparison, AI card-shop/channel aggregation, AI API
+pricing comparison, transit API comparison, price radar, source/risk
+disclosure, or related data aggregation services.
+
+2. Permitted Use
+
+Subject to this license, you may:
+
+- Read and study the source code.
+- Copy, fork, and modify the source code for personal learning,
+  research, evaluation, and local development.
+- Deploy PriceAI for your own personal use.
+- Deploy PriceAI inside your own organization for internal,
+  non-commercial use.
+- Publish non-commercial patches or pull requests back to the official
+  repository.
+- Use small excerpts of code or documentation for commentary, review,
+  or education with attribution.
+
+3. Restrictions
+
+Without prior written permission from the Licensor, you may not:
+
+- Use PriceAI, a modified version of PriceAI, or a derivative work of
+  PriceAI for Commercial Use.
+- Operate PriceAI, a modified version of PriceAI, or a derivative work
+  of PriceAI as a Public Hosted Service.
+- Operate a Competitive Service based on PriceAI.
+- Add advertising, affiliate links, sponsored placements, paid traffic
+  routing, paid listings, paid data access, paid membership, or other
+  monetization to a deployment based on PriceAI.
+- Resell, rent, sublicense, or offer PriceAI as part of a commercial
+  product or service.
+- Use PriceAI as a substitute data feed, bulk mirror, crawler target,
+  or dataset backend for another product without permission.
+- Remove or hide copyright, license, attribution, or official project
+  notices from PriceAI.
+- Present any fork, mirror, hosted copy, derivative service, or
+  modified version as the Official Service.
+
+4. Brand, Data, and Content
+
+This license applies to the software code in this repository. It does
+not grant any rights to use the PriceAI name, Price AI name, logo,
+icon, domain name, visual identity, screenshots, production data,
+collected source/channel lists, raw or normalized offer data, pricing
+snapshots, price history, stock status, crawl logs, manually reviewed
+classification data, user submissions, feedback, moderation notes,
+guides, editorial content, or marketing copy except as explicitly
+allowed in the repository's DATA_LICENSE.md and TRADEMARKS.md files.
+
+5. Contributions
+
+By submitting a contribution to the official PriceAI repository, you
+represent that you have the right to submit it and you grant the
+Licensor a perpetual, worldwide, non-exclusive, royalty-free license to
+use, reproduce, modify, distribute, publicly perform, publicly display,
+operate, and sublicense your contribution as part of PriceAI, including
+as part of the Official Service and any future official or commercial
+licensing of PriceAI.
+
+Contributions published in this repository remain available to users
+under this license unless a different written agreement applies.
+
+6. Third-Party Materials
+
+Third-party dependencies and materials included in or referenced by
+PriceAI remain governed by their own licenses. This license does not
+change their terms.
+
+7. Commercial Permission
+
+For commercial deployment, hosted services, competitive use, closed
+source use, brand use, data cooperation, sponsorship, certified
+listing, affiliate cooperation, or other commercial arrangements, ask
+for written permission first through Telegram:
+
+https://t.me/dimthink
+
+8. Termination
+
+If you violate this license, your rights under this license terminate
+automatically. The Licensor may reinstate rights in writing after the
+violation is cured.
+
+9. No Warranty
+
+PriceAI is provided "as is", without warranty of any kind, express or
+implied, including but not limited to warranties of merchantability,
+fitness for a particular purpose, non-infringement, availability,
+accuracy, or reliability. You are responsible for your own use of
+PriceAI and any deployment, modification, or decision based on it.
+
+10. Historical Versions
+
+Versions of PriceAI that were published before this license was adopted
+may remain governed by the license file that accompanied those exact
+versions. This license applies to this repository from the commit that
+introduced it onward, unless a later license file says otherwise.
